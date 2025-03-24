@@ -5,81 +5,67 @@ environments: Web
 status: Published
 # QuCreate Streamlit Lab User Guide
 
-This codelab will guide you through the QuCreate Streamlit Lab application, a tool designed to illustrate fundamental concepts in bond pricing and yield curve visualization. Understanding these concepts is crucial for anyone involved in finance, investment, or risk management. This application provides an interactive and intuitive way to explore how different factors influence bond prices and how yield curves are constructed and interpreted. Through hands-on exploration with the application's features, you will gain a deeper understanding of these essential financial principles.
+This codelab provides a comprehensive guide to using the QuCreate Streamlit Lab, a powerful tool for understanding bond pricing and yield curve dynamics. This application is designed to help you grasp essential fixed-income concepts through interactive visualizations and calculations. By the end of this guide, you'll be able to use the application effectively to explore bond pricing scenarios and understand the relationship between yield and bond prices.
 
-## Exploring the Bond Pricing Calculator
+## Understanding the Application's Structure
+Duration: 00:02
+
+The QuCreate Streamlit Lab is structured as a multi-page application, each page focusing on a specific aspect of bond analysis:
+
+*   **Bond Pricing Calculator:** This page allows you to calculate the price of a bond based on your input parameters like coupon rate, maturity, face value, and yield to maturity (YTM).
+*   **Yield Curve Visualization:** This page presents an interactive chart visualizing the relationship between a bond's price and its YTM, enabling you to observe how price changes as the YTM varies.
+*   **Documentation:** A page that explains the formulas and underlying concepts.
+
+Use the navigation sidebar on the left to switch between these pages.
+
+## Bond Pricing Calculator
 Duration: 00:05
 
-The Bond Pricing Calculator is a core feature of this application. It allows you to calculate the theoretical price of a bond based on key inputs such as coupon rate, maturity, face value, and yield to maturity (YTM). This is a fundamental tool for understanding how bond prices are determined in the market.
+This section guides you through using the Bond Pricing Calculator.
 
-## Using the Bond Pricing Calculator
-Duration: 00:10
-
-1.  **Navigate to the "Bond Pricing Calculator"**: Use the navigation sidebar on the left to select "Bond Pricing Calculator."
-2.  **Input Bond Parameters**: You will see input fields for:
-    *   **Coupon Rate**: Enter the bond's coupon rate as a decimal (e.g., 0.05 for 5%).
-    *   **Maturity**: Enter the number of years until the bond matures.
-    *   **Face Value**: Enter the face value (par value) of the bond. This is the amount the bondholder will receive at maturity.
-    *   **Yield to Maturity (YTM)**: Enter the YTM as a decimal (e.g., 0.04 for 4%). YTM represents the total return an investor can expect if they hold the bond until maturity.
-3.  **Calculate the Price**: Click the "Calculate Price" button. The application will then display the calculated bond price.
-
-<aside class="positive">
-<b>Tip:</b> Experiment with different values for coupon rate, maturity, and YTM to see how they affect the bond price. Notice how the bond price moves inversely with YTM.
-</aside>
-
-## Understanding the Bond Pricing Formula
-Duration: 00:10
-
-The application uses the following formula to calculate the bond price:
-
-Price = (Coupon Payment) * (1 - (1+YTM)^(-Maturity)) / YTM + Face Value / (1+YTM)^(Maturity)
-
-where:
-
-*   **Coupon Payment** = Coupon Rate * Face Value
-*   **Maturity** is the number of years until maturity.
-*   **YTM** is the Yield to Maturity or discount rate.
-
-The formula essentially discounts all future cash flows (coupon payments and face value) back to their present value using the YTM as the discount rate.
-
-## Exploring the Yield Curve Visualization
-Duration: 00:05
-
-The Yield Curve Visualization tool helps you understand the relationship between bond prices and YTM. By visualizing how the price of a bond changes as the YTM varies, you can gain insights into interest rate risk and bond valuation.
-
-## Using the Yield Curve Visualization
-Duration: 00:15
-
-1.  **Navigate to "Yield Curve Visualization"**: Use the navigation sidebar to select "Yield Curve Visualization."
-2.  **Input Bond Parameters**: Similar to the Bond Pricing Calculator, you'll need to input:
-    *   **Coupon Rate**
-    *   **Maturity**
-    *   **Face Value**
-    *   **Starting YTM**: This is the lowest YTM value that will be displayed on the chart.
-    *   **Ending YTM**: This is the highest YTM value that will be displayed on the chart.
-    *   **Number of Points**: This determines the granularity of the yield curve. A higher number of points will result in a smoother curve.
-3.  **Observe the Interactive Chart**: The application will generate a Plotly chart showing the bond price on the Y-axis and the YTM on the X-axis.
+1.  **Accessing the Calculator:** Select "Bond Pricing Calculator" from the navigation sidebar.
+2.  **Inputting Bond Parameters:** You will see input fields for:
+    *   **Coupon Rate:** The annual interest rate paid on the bond's face value (e.g., 0.05 for 5%).
+    *   **Maturity (years):** The number of years until the bond matures.
+    *   **Face Value:** The amount the bondholder will receive at maturity.
+    *   **Yield to Maturity (YTM):** The total return anticipated on a bond if it is held until it matures.
+3.  **Calculating the Price:** After entering the values, click the "Calculate Price" button.
+4.  **Interpreting the Results:** The calculated bond price will be displayed.  This is the theoretical price you should be willing to pay for the bond, given the specified parameters and assuming you hold it to maturity.
+5. **Understanding the Formula:** The section below the calculator displays the Bond Pricing formula and explains each of its components.
 
 <aside class="positive">
-<b>Tip:</b> Hover over the chart to see the exact YTM and corresponding bond price at any point on the curve. Adjust the YTM range and the number of points to explore the relationship in more detail.
+The calculator is a great way to see how changes in YTM, coupon rate and time to maturity affect a bond's price. Experiment with different values!
 </aside>
+
+## Yield Curve Visualization
+Duration: 00:07
+
+This section explores the Yield Curve Visualization feature. This visualization allows you to see how the bond price changes when the Yield to Maturity (YTM) changes.
+
+1.  **Accessing the Visualization:** Select "Yield Curve Visualization" from the navigation sidebar.
+2.  **Setting Visualization Parameters:**
+    *   You'll find the same input fields as in the Bond Pricing Calculator: "Coupon Rate," "Maturity," and "Face Value." Adjust these to reflect the bond you want to analyze.
+    *   Additionally, you can set:
+        *   **Starting YTM:** The minimum YTM for the X axis of the chart.
+        *   **Ending YTM:** The maximum YTM for the X axis of the chart.
+        *   **Number of Points:** This controls the smoothness of the curve by specifying how many data points are used to generate it. Higher values result in a smoother curve.
+3.  **Analyzing the Chart:** The application generates an interactive line chart showing the relationship between "YTM" (x-axis) and "Bond Price" (y-axis).
+    *   **Observe the Relationship:** Notice the inverse relationship: as the YTM increases, the bond price decreases, and vice versa.
+    *   **Hover for Details:** Hover your mouse over any point on the chart to see the exact YTM and corresponding bond price.
+4. **Understanding Interactivity:** The chart dynamically updates as you adjust the input parameters, allowing for real-time analysis.
 
 <aside class="negative">
-<b>Warning:</b> Ensure that the Starting YTM is less than the Ending YTM. Otherwise, the application will display an error.
+Ensure that the "Starting YTM" is less than the "Ending YTM".
 </aside>
 
-## Interpreting the Yield Curve
-Duration: 00:10
+## Documentation
+Duration: 00:03
 
-The Yield Curve Visualization demonstrates the inverse relationship between bond prices and YTM. As the YTM increases, the bond price decreases, and vice versa. The steepness of the curve reflects the sensitivity of the bond price to changes in interest rates. A steeper curve indicates higher sensitivity.
+1.  **Accessing Documentation:** Click on the "Documentation" navigation on the sidebar.
+2.  **Reading the Documentation:** The documentation page provides detailed explanations of:
+    *   The purpose of the application.
+    *   The features available.
+    *   The bond pricing formula and its components.
+    *   Instructions on how to use the application.
 
-## Exploring the Documentation
-Duration: 00:05
-
-The Documentation page provides a summary of the application's features, the bond pricing formula, and instructions on how to use the tool. It's a helpful resource for understanding the underlying concepts and the application's functionality.
-
-## Using the Documentation
-Duration: 00:05
-
-1.  **Navigate to "Documentation"**: Use the navigation sidebar to select "Documentation".
-2.  **Review the Information**: Read through the provided information to reinforce your understanding of the bond pricing formula, the application's features, and how to use the tool effectively.
+This page serves as a quick reference guide to the application's functionality and underlying concepts.
