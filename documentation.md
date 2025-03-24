@@ -3,58 +3,38 @@ summary: Bond Pricing & Yield Curve Analysis Documentation
 feedback link: https://docs.google.com/forms/d/e/1FAIpQLSfWkOK-in_bMMoHSZfcIvAeO58PAH9wrDqcxnJABHaxiDqhSA/viewform?usp=sf_link
 environments: Web
 status: Published
-# QuCreate Streamlit Lab: A Comprehensive Guide to Bond Pricing and Visualization
+# Streamlit Bond Pricing and Yield Curve Analysis Codelab
 
-This codelab provides a detailed walkthrough of the QuCreate Streamlit Lab, a multi-page application designed for educational purposes. It demonstrates bond pricing calculations, yield curve visualization, and provides comprehensive documentation. By the end of this codelab, you'll understand the application's architecture, functionality, and how to extend it for your own projects. This application is useful for anyone learning about or working with fixed income securities, financial modeling, and interactive data visualization.
+This codelab will guide you through the functionalities of a Streamlit application designed for bond pricing and yield curve analysis. This application serves as an educational tool to understand the relationship between bond parameters and their price.  We will explore the key concepts of bond pricing and yield curve construction through interactive examples.
 
-## Understanding the Application's Architecture
+## Understanding the Application's Purpose
 Duration: 00:05
 
-The QuCreate Streamlit Lab is structured as a multi-page application using Streamlit's built-in features. The main entry point is `app.py`, which handles navigation and page routing. The core functionalities are modularized into separate pages within the `pages` directory:
+This application is designed to illustrate the fundamental concepts of bond pricing and how yield curves are constructed and interpreted. By the end of this codelab, you will understand:
 
-*   `bond_pricing.py`: Contains the bond pricing calculator.
-*   `visualization.py`: Implements the yield curve visualization.
-*   `documentation.py`: Provides detailed documentation about the application and bond pricing concepts.
-
-Here's a high-level architectural diagram:
-
-```mermaid
-graph LR
-    A[app.py] --> B(Bond Pricing Calculator - bond_pricing.py)
-    A --> C(Yield Curve Visualization - visualization.py)
-    A --> D(Documentation - documentation.py)
-    E[User Interface] --> A
-    B --> F((NumPy, Pandas, Plotly))
-    C --> F
-    style A fill:#f9f,stroke:#333,stroke-width:2px
-    style E fill:#ccf,stroke:#333,stroke-width:2px
-```
+*   The basic formula for bond pricing.
+*   How different bond parameters (coupon rate, maturity, YTM) affect the bond price.
+*   How to visualize the relationship between bond price and yield to maturity through a yield curve.
+*   The structure of a multi-page Streamlit application.
 
 ## Setting up the Environment
 Duration: 00:02
 
-Before diving into the code, ensure you have the following:
-
-*   Python 3.6 or higher
-*   Streamlit
-*   NumPy
-*   Pandas
-*   Plotly
-
-You can install the necessary packages using pip:
+Before diving into the application, ensure you have the necessary Python packages installed. Open your terminal and run:
 
 ```console
-pip install streamlit numpy pandas plotly
+pip install streamlit numpy plotly
 ```
 
-## Exploring `app.py`: The Main Application
+This command installs Streamlit for creating the user interface, NumPy for numerical computations, and Plotly for interactive visualizations.
+
+## Exploring the `app.py` - Main Application Entry Point
 Duration: 00:05
 
-The `app.py` file serves as the entry point for the Streamlit application. It configures the page layout, adds a sidebar for navigation, and routes users to different pages based on their selection.
+The `app.py` file serves as the main entry point for the Streamlit application. Let's break down its functionality:
 
 ```python
 import streamlit as st
-from pages import bond_pricing, visualization, documentation
 
 st.set_page_config(page_title="QuCreate Streamlit Lab", layout="wide")
 st.sidebar.image("https://www.quantuniversity.com/assets/img/logo5.jpg")
@@ -62,15 +42,18 @@ st.sidebar.divider()
 st.title("QuLab")
 st.divider()
 
-# Navigation sidebar for multi-page app
-page = st.sidebar.selectbox("Navigation", ["Bond Pricing Calculator", "Yield Curve Visualization", "Documentation"])
+# Navigation Sidebar for Multipage App
+page = st.sidebar.selectbox("Select Page", ["Bond Pricing", "Yield Curve Analysis", "Explanation"])
 
-if page == "Bond Pricing Calculator":
+if page == "Bond Pricing":
+    from pages import bond_pricing
     bond_pricing.app()
-elif page == "Yield Curve Visualization":
-    visualization.app()
-elif page == "Documentation":
-    documentation.app()
+elif page == "Yield Curve Analysis":
+    from pages import yield_curve
+    yield_curve.app()
+elif page == "Explanation":
+    from pages import explanation
+    explanation.app()
 
 st.divider()
 st.write("© 2025 QuantUniversity. All Rights Reserved.")
@@ -79,182 +62,167 @@ st.caption("The purpose of this demonstration is solely for educational use and 
            "requires prior written consent from QuantUniversity.")
 ```
 
-Key aspects of `app.py`:
+Key components:
 
-*   `st.set_page_config()`: Configures the page title and layout.
-*   `st.sidebar.image()`: Adds an image to the sidebar (QuantUniversity logo in this case).
-*   `st.sidebar.selectbox()`: Creates a dropdown menu in the sidebar for navigation.
-*   Conditional statements:  Based on the selected page, the corresponding `app()` function from the respective module (`bond_pricing`, `visualization`, or `documentation`) is called.
-*   Copyright and Caption: Displaying copyright information and a disclaimer.
+*   **`import streamlit as st`**: Imports the Streamlit library, aliased as `st` for easy use.
+*   **`st.set_page_config(...)`**: Configures the page title and layout.
+*   **`st.sidebar.image(...)`**: Displays an image in the sidebar (in this case, the QuantUniversity logo).
+*   **`st.sidebar.selectbox(...)`**: Creates a dropdown menu in the sidebar allowing users to navigate between different pages of the application.
+*   **Conditional Page Loading**:  Based on the selected page in the sidebar, the corresponding module from the `pages` directory is imported and its `app()` function is executed.
+*   **Copyright and Caption**:  Displays copyright information and a disclaimer at the bottom of the application.
 
-## Diving into `bond_pricing.py`: Bond Pricing Calculator
-Duration: 00:10
+## Understanding the `pages` Directory
+Duration: 00:05
 
-This module implements a bond pricing calculator. Users can input bond parameters like coupon rate, maturity, face value, and yield to maturity (YTM), and the application calculates the bond's price.
+The `pages` directory contains the code for each individual page of the application. Each Python file within this directory represents a separate page accessible through the navigation sidebar in `app.py`.
+
+### `pages/bond_pricing.py`: Bond Pricing Calculator
+
+This page implements a bond pricing calculator.  Let's explore the code:
 
 ```python
 import streamlit as st
-import numpy as np
 
 def calculate_bond_price(coupon_rate, maturity, face_value, ytm):
     """
-    Calculate the price of a bond based on the input parameters.
-    Coupon Payment = coupon_rate * face_value
-    Price = (Coupon Payment) * (1 - (1+ytm)^(-maturity)) / ytm + face_value / (1+ytm)^(maturity)
+    Calculate the bond price using the formula:
+    Price = Sum (Coupon Payment / (1+YTM)^t) + (Face Value / (1+YTM)^n)
+    where Coupon Payment = coupon_rate * face_value.
     """
-    coupon_payment = coupon_rate * face_value
-    # Handle zero yield to maturity
-    if ytm == 0:
-        price = coupon_payment * maturity + face_value
-    else:
-        price = coupon_payment * (1 - (1+ytm)**(-maturity)) / ytm + face_value * (1+ytm)**(-maturity)
+    coupon = coupon_rate * face_value
+    price = 0
+    for t in range(1, int(maturity)+1):
+        price += coupon / ((1 + ytm) ** t)
+    price += face_value / ((1 + ytm) ** maturity)
     return price
 
 def app():
     st.header("Bond Pricing Calculator")
-    st.markdown("Enter the bond parameters below to calculate its price:")
-    coupon_rate = st.number_input("Coupon Rate (e.g., 0.05 for 5%)", min_value=0.0, value=0.05, step=0.01, format="%.2f")
-    maturity = st.number_input("Maturity (years)", min_value=1, value=10, step=1)
-    face_value = st.number_input("Face Value", min_value=1, value=1000, step=1)
-    ytm = st.number_input("Yield to Maturity (YTM) (e.g., 0.04 for 4%)", min_value=0.0, value=0.04, step=0.01, format="%.2f")
-    
-    if st.button("Calculate Price"):
-        price = calculate_bond_price(coupon_rate, maturity, face_value, ytm)
-        st.success(f"Calculated Bond Price: ${price:,.2f}")
-    
     st.markdown("""
-    ### Explanation of the Bond Pricing Formula
-    The bond price is computed using the formula:
+    This page allows you to calculate the price of a bond based on user-defined parameters:
     
-    Price = (Coupon Payment) * (1 - (1+YTM)^(-Maturity))/YTM + Face Value / (1+YTM)^(Maturity)
+    - **Coupon Rate**: Annual coupon rate (as a decimal, e.g., 0.05 for 5%)
+    - **Maturity**: Time to maturity in years.
+    - **Face Value**: The nominal value of the bond.
+    - **Yield to Maturity (YTM)**: The annual yield required by the market (as a decimal).
     
-    where:
-    - **Coupon Payment** = Coupon Rate * Face Value
-    - **Maturity** is the number of years until maturity.
-    - **YTM** is the Yield to Maturity or discount rate.
+    The bond price is calculated using the formula:
+    
+    Price = Sum (Coupon Payment / (1+YTM)^t) + (Face Value / (1+YTM)^n)
+    (where Coupon Payment = Coupon Rate * Face Value)
     """)
+    
+    coupon_rate = st.number_input("Coupon Rate", min_value=0.0, value=0.05, step=0.01)
+    maturity = st.number_input("Maturity (years)", min_value=1, value=10)
+    face_value = st.number_input("Face Value", min_value=100, value=1000)
+    ytm = st.number_input("Yield to Maturity (YTM)", min_value=0.0, value=0.05, step=0.01)
+    
+    if st.button("Calculate Bond Price"):
+        price = calculate_bond_price(coupon_rate, int(maturity), face_value, ytm)
+        st.success(f"The calculated bond price is: {price:.2f}")
 ```
 
-Key components of `bond_pricing.py`:
+*   **`calculate_bond_price(coupon_rate, maturity, face_value, ytm)`**: This function implements the bond pricing formula. It takes the coupon rate, maturity, face value, and yield to maturity as inputs and returns the calculated bond price.
+*   **`app()`**:  This function contains the Streamlit code for the bond pricing calculator page. It includes:
+    *   A header and description of the page using `st.header()` and `st.markdown()`.
+    *   `st.number_input()` widgets for users to input the bond parameters (coupon rate, maturity, face value, and YTM).
+    *   A `st.button()` that, when clicked, calls the `calculate_bond_price()` function with the user-provided inputs and displays the result using `st.success()`.
 
-*   `calculate_bond_price()`: This function calculates the bond price based on the standard bond pricing formula.  It also includes a special case to handle when YTM is zero to avoid division by zero errors.
-*   `st.header()` and `st.markdown()`:  Used for displaying text and explanations on the page.
-*   `st.number_input()`: Creates numerical input fields for users to enter bond parameters. The `format` parameter ensures the input is displayed with two decimal places.
-*   `st.button()`: A button that triggers the bond price calculation.
-*   `st.success()`: Displays the calculated bond price in a green success message.
-*   Markdown Explanation: Provides a clear explanation of the bond pricing formula.
+### `pages/yield_curve.py`: Yield Curve Analysis
 
-## Exploring `visualization.py`: Yield Curve Visualization
-Duration: 00:15
-
-This module generates an interactive Plotly chart visualizing the relationship between bond prices and YTM. It allows users to adjust parameters and observe how the yield curve changes dynamically.
+This page generates an interactive yield curve, visualizing the relationship between bond price and yield to maturity.
 
 ```python
 import streamlit as st
 import numpy as np
-import pandas as pd
 import plotly.express as px
 
 def calculate_bond_price(coupon_rate, maturity, face_value, ytm):
-    coupon_payment = coupon_rate * face_value
-    if ytm == 0:
-        price = coupon_payment * maturity + face_value
-    else:
-        price = coupon_payment * (1 - (1+ytm)**(-maturity)) / ytm + face_value * (1+ytm)**(-maturity)
+    """
+    Calculate the bond price with given parameters.
+    """
+    coupon = coupon_rate * face_value
+    price = 0
+    for t in range(1, int(maturity)+1):
+        price += coupon / ((1 + ytm) ** t)
+    price += face_value / ((1 + ytm) ** maturity)
     return price
 
 def app():
-    st.header("Yield Curve Visualization")
-    st.markdown("This page allows you to visualize the bond price variations as YTM changes.")
-    
-    coupon_rate = st.number_input("Coupon Rate (e.g., 0.05 for 5%)", min_value=0.0, value=0.05, step=0.01, format="%.2f")
-    maturity = st.number_input("Maturity (years)", min_value=1, value=10, step=1)
-    face_value = st.number_input("Face Value", min_value=1, value=1000, step=1)
-    ytm_start = st.number_input("Starting YTM", min_value=0.0, value=0.01, step=0.01, format="%.2f")
-    ytm_end = st.number_input("Ending YTM", min_value=0.0, value=0.10, step=0.01, format="%.2f")
-    num_points = st.slider("Number of Points", min_value=10, max_value=200, value=50)
-    
-    if ytm_start >= ytm_end:
-        st.error("Starting YTM must be less than Ending YTM.")
-        return
-    
-    ytm_values = np.linspace(ytm_start, ytm_end, num_points)
-    prices = [calculate_bond_price(coupon_rate, maturity, face_value, ytm) for ytm in ytm_values]
-    
-    df = pd.DataFrame({
-        "YTM": ytm_values,
-        "Bond Price": prices
-    })
-    
-    fig = px.line(df, x="YTM", y="Bond Price", title="Bond Price vs Yield to Maturity",
-                  labels={"YTM": "Yield to Maturity", "Bond Price": "Bond Price"})
-    fig.update_traces(mode='lines+markers', hovertemplate="YTM: %{x:.2f}<br>Bond Price: $%{y:.2f}")
-    st.plotly_chart(fig, use_container_width=True)
-    
+    st.header("Yield Curve Analysis")
     st.markdown("""
-    ### Interactive Chart Details
-    The above chart updates dynamically as you adjust the input parameters. Hover over any point to view detailed information.
+    This page displays how the bond price varies with different Yield to Maturity (YTM) values.
+    Adjust the parameters below to generate an interactive yield curve using Plotly.
     """)
+
+    # Sidebar inputs specific to yield curve analysis for interactivity
+    coupon_rate = st.sidebar.number_input("Coupon Rate", min_value=0.0, value=0.05, step=0.01)
+    maturity = st.sidebar.number_input("Maturity (years)", min_value=1, value=10)
+    face_value = st.sidebar.number_input("Face Value", min_value=100, value=1000)
+    
+    ytm_min = st.sidebar.number_input("Min YTM", min_value=0.0, value=0.01, step=0.01)
+    ytm_max = st.sidebar.number_input("Max YTM", min_value=ytm_min+0.01, value=0.10, step=0.01)
+    ytm_values = np.linspace(ytm_min, ytm_max, 100)
+    
+    prices = [calculate_bond_price(coupon_rate, int(maturity), face_value, ytm) for ytm in ytm_values]
+    
+    fig = px.line(x=ytm_values, y=prices,
+                  labels={'x':'Yield to Maturity (YTM)', 'y':'Bond Price'},
+                  title='Bond Price vs. Yield to Maturity')
+    st.plotly_chart(fig, use_container_width=True)
 ```
 
-Key components of `visualization.py`:
+*   **`calculate_bond_price(coupon_rate, maturity, face_value, ytm)`**: This function is identical to the one in `bond_pricing.py`.
+*   **`app()`**:
+    *   Takes coupon rate, maturity, and face value inputs via `st.sidebar.number_input()`. Placing the input widgets in `st.sidebar` makes them persistent across interactions.
+    *   Takes minimum and maximum YTM values as input to define the range for the yield curve.
+    *   Generates a sequence of YTM values using `np.linspace()`.
+    *   Calculates the bond price for each YTM value in the sequence.
+    *   Creates an interactive line chart using `plotly.express` to visualize the relationship between YTM and bond price.
+    *   Displays the chart using `st.plotly_chart()`.
 
-*   `calculate_bond_price()`:  Reuses the bond pricing calculation function from `bond_pricing.py`.  This enforces consistency across the application.
-*   `st.number_input()` and `st.slider()`:  Provides UI elements for users to control the YTM range and the number of data points in the chart.
-*   Input Validation: Checks if `ytm_start` is less than `ytm_end` and displays an error message if not. This prevents invalid chart generation.
-*   `np.linspace()`: Creates an array of evenly spaced YTM values within the specified range.
-*   List Comprehension:  Efficiently calculates the bond price for each YTM value.
-*   `pd.DataFrame()`:  Creates a Pandas DataFrame to store the YTM values and corresponding bond prices.
-*   `plotly.express.line()`:  Generates an interactive line chart using Plotly.
-*   `fig.update_traces()`: Customizes the chart's appearance and adds a hover template for detailed information.
-*   `st.plotly_chart()`:  Displays the Plotly chart in the Streamlit application.
-*   Interactive Chart Details: Explains how the chart responds to changes and displays data on hover.
+### `pages/explanation.py`: Explanation and Documentation
 
-## Reviewing `documentation.py`: Application Documentation
-Duration: 00:05
-
-This module provides documentation for the application, explaining its features, bond pricing formula, and usage instructions.
+This page provides a description of the application, the bond pricing formula, and instructions for using the application.
 
 ```python
 import streamlit as st
 
 def app():
-    st.header("Documentation")
+    st.header("Explanation and Documentation")
     st.markdown("""
-    ## Bond Pricing Visualizer Documentation
+    # Bond Pricing & Yield Curve Analysis
 
-    This multi-page Streamlit application is designed for educational purposes to illustrate bond pricing and yield curve analysis.
+    This application is designed to help you understand the principles of bond pricing and how changes in yield to maturity (YTM)
+    can affect the price of a bond. Below are some important sections:
 
-    ### Features
-    - **Bond Pricing Calculator**: Compute the price of a bond using user-defined parameters.
-    - **Yield Curve Visualization**: Interactive Plotly chart showcasing how bond prices change with varying YTM values.
-    - **Documentation**: Detailed explanations of the formulas, methodology, and interactive visualizations.
-
-    ### Bond Pricing Formula
-    The bond price is calculated using the formula:
+    ## Bond Pricing Formula
+    The bond price is calculated using the following formula:
     
-    Price = (Coupon Payment) * (1 - (1 + YTM)^(-Maturity)) / YTM + Face Value / (1 + YTM)^(Maturity)
+       Price = Sum (Coupon Payment / (1+YTM)^t) + (Face Value / (1+YTM)^n)
     
     where:
-    - **Coupon Payment** = Coupon Rate * Face Value
-    - **Maturity** is the number of years until maturity.
-    - **YTM** is the yield to maturity.
+    - Coupon Payment = Coupon Rate × Face Value
+    - t: time period (from 1 to n)
+    - n: total number of periods (maturity)
 
-    ### How to Use
-    1. Navigate using the sidebar.
-    2. Input the required parameters.
-    3. View the calculated bond price or interactive visualization.
-    
-    Enjoy exploring the fundamentals of bond pricing!
+    ## Visualizations
+    The application provides interactive visualizations that allow you to see real-time changes in the bond price
+    as you adjust parameters such as Coupon Rate, Maturity, Face Value, and Yield to Maturity (YTM). The charts are built using Plotly,
+    enabling high interactivity with tooltips and dynamic updates.
+
+    ## Dataset
+    A synthetic dataset is used to model various bond pricing scenarios. This dataset is purely for educational purposes and demonstrates
+    how bond pricing theories can be applied.
+
+    ## User Instructions
+    - Navigate between different pages using the sidebar.
+    - On the "Bond Pricing" page, input your bond parameters and calculate the bond price.
+    - On the "Yield Curve Analysis" page, explore how varying YTM affects the bond price.
     """)
 ```
 
-Key components of `documentation.py`:
-
-*   `st.header()` and `st.markdown()`:  Used to present the documentation content in a structured and readable format.
-*   Features List: Clearly outlines the key functionalities of the application.
-*   Bond Pricing Formula: Provides the formula and explanation.
-*   How to Use: Instructions on how to navigate and interact with the application.
+This page primarily uses `st.markdown()` to display text, headings, and lists, providing a comprehensive explanation of the application's purpose and functionality.
 
 ## Running the Application
 Duration: 00:02
@@ -265,172 +233,79 @@ To run the application, navigate to the directory containing `app.py` in your te
 streamlit run app.py
 ```
 
-This will start the Streamlit server and open the application in your web browser.
+This command will start the Streamlit server and open the application in your web browser.
 
-## Testing the Application
+## Interacting with the Application
 Duration: 00:10
 
-The application includes unit tests and integration tests.
+1.  **Bond Pricing Page**: Select "Bond Pricing" from the sidebar. Experiment with different values for the coupon rate, maturity, face value, and YTM. Click the "Calculate Bond Price" button to see the calculated price. Observe how changes in each parameter affect the bond price.  For example, increasing the YTM generally decreases the bond price, and vice versa.
 
-**Unit Tests (`tests/test_bond_pricing.py`)**:
+2.  **Yield Curve Analysis Page**: Select "Yield Curve Analysis" from the sidebar. Adjust the coupon rate, maturity, face value, minimum YTM, and maximum YTM. Observe how the yield curve changes in response to these adjustments.  Notice how the shape of the yield curve reflects the relationship between YTM and bond price. Generally, as YTM increases, the bond price decreases, resulting in a downward-sloping curve.
+
+3.  **Explanation Page**:  Select "Explanation" from the sidebar. Review the documentation to reinforce your understanding of the bond pricing formula and the application's functionality.
+
+## Testing the Application
+Duration: 00:05
+
+The `tests` directory contains unit and integration tests to ensure the application functions correctly.
+
+### `tests/test_bond_pricing.py`: Unit Tests
+
+This file contains a unit test for the `calculate_bond_price` function.
 
 ```python
 import unittest
 from pages.bond_pricing import calculate_bond_price
 
 class TestBondPricing(unittest.TestCase):
-    def test_zero_ytm(self):
-        # When YTM is 0, bond price should equal coupon_payment*maturity + face_value.
-        price = calculate_bond_price(0.05, 10, 1000, 0)
-        expected = 0.05 * 1000 * 10 + 1000
-        self.assertAlmostEqual(price, expected, places=2)
-        
-    def test_nonzero_ytm(self):
-        coupon_rate = 0.05
-        maturity = 10
-        face_value = 1000
-        ytm = 0.04
-        price = calculate_bond_price(coupon_rate, maturity, face_value, ytm)
-        coupon_payment = coupon_rate * face_value
-        expected = coupon_payment * (1 - (1+ytm)**(-maturity))/ytm + face_value*(1+ytm)**(-maturity)
-        self.assertAlmostEqual(price, expected, places=2)
+    def test_bond_price(self):
+        # With coupon_rate=0.05, maturity=10, face_value=1000, ytm=0.05, the bond price should be near par.
+        price = calculate_bond_price(0.05, 10, 1000, 0.05)
+        # Expected value is approximately 1000 (allowing for numerical tolerance)
+        self.assertAlmostEqual(price, 1000, delta=50)
 
 if __name__ == '__main__':
     unittest.main()
 ```
 
-This tests the `calculate_bond_price` function, specifically handling the case where YTM is zero and a general case with a non-zero YTM.
+This test asserts that when the coupon rate equals the YTM, the bond price should be close to the face value.
 
-**Integration Tests (`tests/test_integration.py`)**:
+### `tests/integration/test_app.py`: Integration Tests
+
+This file contains an integration test to ensure that the `app()` functions exist in each page module.
 
 ```python
 import unittest
-from pages import bond_pricing, visualization, documentation
+from pages import bond_pricing, yield_curve, explanation
 
 class TestIntegration(unittest.TestCase):
-    def test_bond_pricing_page(self):
-        try:
-            bond_pricing.app()
-        except Exception as e:
-            self.fail(f"bond_pricing.app() raised an exception: {e}")
-            
-    def test_visualization_page(self):
-        try:
-            visualization.app()
-        except Exception as e:
-            self.fail(f"visualization.app() raised an exception: {e}")
-            
-    def test_documentation_page(self):
-        try:
-            documentation.app()
-        except Exception as e:
-            self.fail(f"documentation.app() raised an exception: {e}")
+    def test_pages_exist(self):
+        self.assertTrue(hasattr(bond_pricing, 'app'))
+        self.assertTrue(hasattr(yield_curve, 'app'))
+        self.assertTrue(hasattr(explanation, 'app'))
 
 if __name__ == '__main__':
     unittest.main()
 ```
 
-This ensures that each page (`bond_pricing`, `visualization`, `documentation`) can be loaded without errors.
-
-To run the tests, navigate to the `tests` directory and run:
+To run the tests, navigate to the `tests` directory in your terminal and execute:
 
 ```console
-python -m unittest test_bond_pricing.py
-python -m unittest test_integration.py
+python -m unittest discover
 ```
 
-## Dockerization
-Duration: 00:08
+## Extending the Application
+Duration: 00:15
 
-The application is dockerized to allow for easy deployment and portability. The `Dockerfile` (assumed to be in the project root) would contain instructions to set up the environment and run the application. The provided `.github/workflows/build_docker_and_push.yml` workflow automates the process of building and pushing the Docker image to Docker Hub when a new tag is pushed to the repository.
+Here are some ideas for extending the application:
 
-**Dockerfile (Example)**:
-
-```dockerfile
-FROM python:3.9-slim-buster
-
-WORKDIR /app
-
-COPY . .
-
-RUN pip install --no-cache-dir -r requirements.txt
-
-EXPOSE 8501
-
-CMD ["streamlit", "run", "app.py"]
-```
-
-**Explanation**:
-
-*   `FROM python:3.9-slim-buster`: Uses a lightweight Python 3.9 image as the base.
-*   `WORKDIR /app`: Sets the working directory inside the container.
-*   `COPY . .`: Copies all files from the current directory to the `/app` directory in the container.
-*   `RUN pip install --no-cache-dir -r requirements.txt`: Installs the Python dependencies. You'll need a `requirements.txt` file listing all the dependencies (e.g., streamlit, numpy, pandas, plotly).
-*   `EXPOSE 8501`: Exposes port 8501, the default Streamlit port.
-*   `CMD ["streamlit", "run", "app.py"]`: Specifies the command to run when the container starts.
-
-## CI/CD Pipeline
-
-The `.github/workflows/build_docker_and_push.yml` file defines a GitHub Actions workflow to automatically build and push a Docker image to Docker Hub when a tagged commit is pushed to the repository.
-
-```yaml
-name: Build and Push to Docker Hub
-
-on:
-  push:
-    tags:
-      - "v*.*.*"
-  
-jobs:
-  build-and-push:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Check out repository
-        uses: actions/checkout@v2
-
-      - name: Log in to Docker Hub
-        run: |
-          echo "${{ secrets.DOCKERHUB_PASSWORD }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
-
-      - name: Build Docker image
-        run: |
-          docker build -t None/67ddba6814d6b2f98be31d87_streamlit_app:latest .
-
-      - name: Push Docker image
-        run: |
-          docker push None/67ddba6814d6b2f98be31d87_streamlit_app:latest
-```
-
-**Explanation**:
-
-*   `name`: Sets the name of the workflow.
-*   `on`: Defines the trigger for the workflow (pushing tags matching `v*.*.*`).
-*   `jobs`: Defines the jobs to be executed.
-*   `build-and-push`: The job to build and push the Docker image.
-*   `runs-on`: Specifies the operating system for the job.
-*   `steps`: Defines the steps within the job.
-    *   `Check out repository`: Checks out the repository.
-    *   `Log in to Docker Hub`: Logs in to Docker Hub using secrets stored in GitHub.
-    *   `Build Docker image`: Builds the Docker image.
-    *   `Push Docker image`: Pushes the Docker image to Docker Hub.
-
-<aside class="positive">
-<b>Best Practice:</b> Always store sensitive information like Docker Hub credentials as secrets in GitHub Actions for security.
-</aside>
-
-## Customization and Extension
-Duration: 00:10
-
-The application is designed to be easily customizable and extensible. Here are some ideas for extending its functionality:
-
-*   **Adding More Bond Types:** Implement pricing models for different types of bonds (e.g., zero-coupon bonds, callable bonds).
-*   **Integrating Data Sources:** Fetch real-time yield curve data from external APIs.
-*   **Implementing Risk Metrics:** Calculate bond duration, convexity, and other risk metrics.
-*   **Enhancing Visualization:** Add more interactive features to the yield curve visualization, such as the ability to compare different yield curves.
-*   **Adding more tests**: Add tests for the visualization and documentation pages. Also add more unit tests for edge cases.
+*   **Add More Sophisticated Bond Pricing Models:** Implement models that account for embedded options (e.g., callable bonds) or different yield curve shapes.
+*   **Implement Different Yield Curve Construction Methods:**  Explore methods like bootstrapping or the Nelson-Siegel model.
+*   **Incorporate Real-World Data:** Fetch bond data from a reliable source and use it to drive the visualizations.
+*   **Add Scenario Analysis:** Allow users to define different economic scenarios and see how bond prices and yield curves change under those scenarios.
+*   **Add a data table:** Display the bond price calculation in a tabular format.
 
 ## Conclusion
-Duration: 00:02
+Duration: 00:03
 
-This codelab provided a comprehensive overview of the QuCreate Streamlit Lab, covering its architecture, functionality, and how to extend it. By understanding the concepts and code presented here, you can build your own financial applications and interactive data visualizations using Streamlit.
+You have successfully completed this codelab and gained a better understanding of how to build a Streamlit application for bond pricing and yield curve analysis. This application provides a foundation for further exploration of fixed-income concepts and development of more sophisticated financial tools.
