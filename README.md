@@ -1,33 +1,36 @@
+# Bond Pricing & Yield Curve Analysis Lab
 
-# QuCreate Streamlit Lab
-
-This repository contains a Streamlit application for demonstrating the features and capabilities of the QuCreate platform.
+This repository contains a Streamlit application that facilitates interactive bond pricing calculations and yield curve analysis.
 
 ## Features
-- Streamlit sidebar with a company logo.
-- Template for easy development.
-- Placeholder for adding custom code.
 
-## Getting Started
+- Multi-page application for bond pricing calculations, yield curve visualization, and detailed explanations.
+- Real-time interactive visualizations using Plotly.
+- Comprehensive markdown documentation explaining the bond pricing formula, data, and visualizations.
+- Unit tests and integration tests to ensure code quality.
+- Docker support for containerized deployment.
 
-### Prerequisites
-- Python 3.8 or later
-- Streamlit installed (see `requirements.txt`).
+## Installation
 
-### Installation
-1. Clone the repository
-2. Install dependencies:
-`pip install -r requirements.txt`
+1. Install the dependencies:
+   ```
+   pip install -r requirements.txt
+   ```
 
-### Running the Application
-1. Run the Streamlit app:
+2. Run the application:
+   ```
+   streamlit run app.py
+   ```
 
-### Development
-1. Modify the `app.py` file to add your custom code.
-2. Use the placeholder section (`# Code goes here`) to add new functionality.
+## Running Tests
 
-### Deployment
-- Deploy your Streamlit app using Streamlit Sharing, Docker, or any other platform supporting Python web applications.
+- **Unit Tests:** Run `pytest tests/test_bond_pricing.py`
+- **Integration Tests:** Run `pytest tests/integration/test_app.py`
+
+## Docker
+
+Use the provided Dockerfile and docker-compose.yml to run the application in a Docker container.
 
 ## License
-© 2025 QuantUniversity. All Rights Reserved. Educational use only. For licensing details, please contact QuantUniversity.
+
+© 2025 QuantUniversity. All Rights Reserved.
