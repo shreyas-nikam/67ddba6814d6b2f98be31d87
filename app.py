@@ -1,13 +1,23 @@
-
 import streamlit as st
 
 st.set_page_config(page_title="QuCreate Streamlit Lab", layout="wide")
-st.sidebar.image("assets/images/company_logo.jpg")
+st.sidebar.image("https://www.quantuniversity.com/assets/img/logo5.jpg")
 st.sidebar.divider()
-st.title("QuCreate Streamlit Lab")
+st.title("QuLab")
 st.divider()
 
-# Code goes here
+# Navigation Sidebar for Multipage App
+page = st.sidebar.selectbox("Select Page", ["Bond Pricing", "Yield Curve Analysis", "Explanation"])
+
+if page == "Bond Pricing":
+    from pages import bond_pricing
+    bond_pricing.app()
+elif page == "Yield Curve Analysis":
+    from pages import yield_curve
+    yield_curve.app()
+elif page == "Explanation":
+    from pages import explanation
+    explanation.app()
 
 st.divider()
 st.write("© 2025 QuantUniversity. All Rights Reserved.")
