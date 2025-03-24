@@ -8,14 +8,12 @@ WORKDIR /app
 COPY requirements.txt /app/
 
 # Install dependencies
-RUN pip install --upgrade pip \
-    && pip install -r requirements.txt
+RUN pip install --upgrade pip && pip install -r requirements.txt
 
 # Copy the rest of the application code
 COPY . /app
 
 # Set the port number via build-time or run-time environment
-# We'll default it to 8501, but you can override later.
 ENV PORT=8501
 
 # Expose the port so Docker maps it
